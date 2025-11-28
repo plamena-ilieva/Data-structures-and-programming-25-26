@@ -42,39 +42,47 @@ public:
 
 		T& operator*()
 		{
-
+			return currentElementPtr->data;
 		}
 
 		T* operator->()
 		{
-
+			return &currentElementPtr->data;
 		}
 
 		SllIterator& operator++()
 		{
-			
+			if (currentElementPtr)
+				currentElementPtr = currentElementPtr->next;
+			return *this;
 		}
 
 		SllIterator operator++(int)
 		{
-			
+			SllIterator copy(*this);
+			++(*this);
+			return copy;
 		}
 
 		SllIterator& operator+=(size_t s)
 		{
-			
+			while (s--)
+				++(*this);
+
+			return *this;
 		}
 
 		SllIterator operator+(int i) const
 		{
-
+			SllIterator res(*this);
+			return res += i;
 		}
 
 		bool operator==(const SllIterator& rhs) const { 
-			
+			return currentElementPtr == rhs.currentElementPtr;
 		}
 		bool operator!=(const SllIterator& rhs) const { 
-
+			return !(rhs == *this);
 		}
 
 	};
@@ -136,22 +144,22 @@ public:
 
 	};
 
-	ConstSllIterator begin()
+	SllIterator begin()
 	{
-		
+		return SllIterator(head);
 	}
 	SllIterator end()
 	{
-		
+		return SllIterator(tail);
 	}
 
 	ConstSllIterator cbegin() const
 	{
-		
+		return ConstSllIterator(head);
 	}
 	ConstSllIterator cend() const
 	{
-		
+		return ConstSllIterator(tail);
 	}
 
 	SllIterator insertAfter(const T& element, const ConstSllIterator& it);

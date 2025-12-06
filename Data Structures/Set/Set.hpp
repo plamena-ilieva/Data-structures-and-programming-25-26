@@ -1,7 +1,11 @@
 #pragma once
+#include <iostream>
+
 
 class Set {
 public:
+	Set() = default;
+	Set(const Set& other);
 	~Set();
 	bool contains(int toFind) const;
 	bool insert(int toAdd);
@@ -15,6 +19,13 @@ private:
 
 		Node(int data, Node* left = nullptr, Node* right = nullptr);
 	};
+	Node** getMin(Node** curr)
+	{
+		while ((*curr)->left)
+			curr = &(*curr)->left;
+		return curr;
+	}
+
 
 	Node* root = nullptr;
 
@@ -22,7 +33,9 @@ private:
 	Node* copyFrom(const Node* root);
 };
 
-// ---------------- DEFINITIONS ----------------
+Set::Set(const Set& other){
+	root = copyFrom(other.root);
+}
 
 Set::~Set() {
 	free(root);
@@ -76,7 +89,7 @@ bool Set::remove(int toDelete) {
 
 			if (!(*curr)->left && !(*curr)->right) //if its a leaf!
 			{
-				delete *curr;
+				delete* curr;
 				*curr = nullptr;
 			}
 			else if (!(*curr)->right) //only left
@@ -93,7 +106,17 @@ bool Set::remove(int toDelete) {
 			}
 			else //if we have two children 
 			{
+				Node** minFromRight = getMin(&(*curr)->right);
 
+				Node* toDelete = *curr;
+				Node* replacement = *minFromRight;
+
+				replacement->left = toDelete->left; //1
+				(*minFromRight) = replacement->right; //2
+
+				replacement->right = toDelete->right; //3
+				(*curr) = replacement; //4
+				delete toDelete;
 			}
 		}
 		else if (toDelete < (*curr)->data) {
@@ -106,11 +129,10 @@ bool Set::remove(int toDelete) {
 	return false; //nothing to delete
 }
 
-// Node constructor
 Set::Node::Node(int data, Node* left, Node* right) :
-	data(data), left(left), right(right) { }
+	data(data), left(left), right(right) {
+}
 
-// Free helper
 void Set::free(Node* root) {
 	if (!root) {
 		return;
@@ -121,7 +143,6 @@ void Set::free(Node* root) {
 	delete root;
 }
 
-// Copy helper
 Set::Node* Set::copyFrom(const Node* root) {
 	if (!root) {
 		return nullptr;

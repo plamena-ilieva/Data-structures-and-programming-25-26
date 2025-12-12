@@ -6,6 +6,7 @@ class Set {
 public:
 	Set() = default;
 	Set(const Set& other);
+	Set& operator=(const Set& other);
 	~Set();
 	bool contains(int toFind) const;
 	bool insert(int toAdd);
@@ -55,6 +56,7 @@ private:
 	}
 
 	Node** getMin(Node** curr)
+
 	{
 		while ((*curr)->left)
 			curr = &(*curr)->left;
@@ -133,6 +135,15 @@ public:
 
 Set::Set(const Set& other) {
 	root = copyFrom(other.root);
+}
+
+Set::Set& operator=(const Set& other) {
+	if(this == &other) {
+		free(root);
+		root = copyFrom(other.root);
+	}
+
+	return *this;
 }
 
 Set::~Set() {

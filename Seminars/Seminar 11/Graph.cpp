@@ -26,31 +26,8 @@ public:
     int BFS_shortest_path_vector(size_t start, size_t end) const;
 
 
-    bool DFS_CONTAINS_CYCLE(int start, std::vector<bool>& visited, std::set<int>& isInStack) const
-    {
-        isInStack.insert(start);
-        visited[start] = true;
-
-        bool cycle = false;
-        for (int neighbor : adj[start])
-        {
-            if (isInStack.find(neighbor) != isInStack.end())
-                return true; //cycle!!!
-
-            if (!visited[neighbor])
-            {
-                cycle = cycle || DFS_CONTAINS_CYCLE(neighbor, visited, isInStack);
-            }
-        }
-        isInStack.erase(start);
-    }
-
-    bool containsCycle() const
-    {   
-        std::set<int> isInStack;
-
-
-    }
+    bool DFS_CONTAINS_CYCLE(int start, std::vector<bool>& visited, std::set<int>& isInStack) const;
+    bool containsCycle() const;
     
     int connected_comp_count() const;
 };
@@ -225,6 +202,40 @@ void Graph::DFS_REC(size_t start) const
     dfs_help_rec(start, start, visited);
 }
 
+
+bool Graph::DFS_CONTAINS_CYCLE(int start, std::vector<bool>& visited, std::set<int>& isInStack) const
+{
+    isInStack.insert(start);
+    visited[start] = true;
+
+    bool cycle = false;
+    for (int neighbor : adj[start])
+    {
+        if (isInStack.find(neighbor) != isInStack.end())
+            return true; //cycle!!!
+
+        if (!visited[neighbor])
+        {
+            cycle = cycle || DFS_CONTAINS_CYCLE(neighbor, visited, isInStack);
+        }
+    }
+    isInStack.erase(start);
+    return cycle;
+}
+
+bool Graph::containsCycle() const
+{   
+    std::set<int> isInStack;
+
+
+    for (size_t i = 0; i < adj.size(); i++)
+    {
+        if (!visited[i])
+            if (DFS_CONTAINS_CYCLE(i, visited, isInStack))
+                return true;
+    }
+    return false;
+}
 
 int Graph::connected_comp_count() const {
     if (oriented) {
